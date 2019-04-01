@@ -1,0 +1,27 @@
+datagrids:
+  app-ticket-grid:
+    source:
+      type: orm
+      query:
+        select:
+          - t
+          - a.firstName AS authorFirstName
+          - a.lastName AS authorLastName
+          - a.email AS authorEmail
+        from:
+          - { table: 'AppBundle:Ticket', alias: 't' }
+        join:
+          left:
+            - { join: 't.author', alias: 'a' }
+
+    columns:
+      uuid:
+        label: app.ticket.uuid.label
+      title:
+        label: app.ticket.title.label
+      authorFirstName:
+        label: app.ticket.author_first_name.label
+      authorLastName:
+        label: app.ticket.author_last_name.label
+      authorEmail:
+        label: app.ticket.author_email.label

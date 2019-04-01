@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+  sql:
+    build:
+      context: .docker/postgres@9.6/
+    environment:
+      POSTGRES_USER: "kiboko"
+      POSTGRES_DB: "kiboko"
+    restart: on-failure

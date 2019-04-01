@@ -1,0 +1,37 @@
+version: '2'
+
+services:
+  mail:
+    image: namshi/smtp:latest
+    environment:
+      RELAY_NETWORKS: ":192.168.0.0/24"
+      PORT: 1025
+
+  amqp:
+    environment:
+      - RABBITMQ_DEFAULT_USER=kiboko
+      - RABBITMQ_DEFAULT_PASS=password
+
+  sql:
+    environment:
+      - POSTGRES_PASSWORD=password
+
+  http:
+    ports:
+      - 8000:80
+    volumes:
+      - ./nginx@1.15/config/vhost-prod.conf:/etc/nginx/conf.d/100-default.conf
+
+  fpm:
+    volumes:
+      - ./php@7.2/fpm/config/pool.ini:/usr/local/etc/php/pool.d/default.ini:ro
+      - ./php@7.2/fpm/config/memory.ini:/usr/local/etc/php/conf.d/memory.ini:ro
+      - ./php@7.2/fpm/config/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini:ro
+
+  ws:
+    ports:
+      - 8080:8080
+
+  cli:
+    volumes:
+      - ./php@7.2/cli/config/memory.ini:/usr/local/etc/php/conf.d/memory.ini:ro

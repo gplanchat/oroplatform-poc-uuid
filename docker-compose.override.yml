@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  mail:
+    image: schickling/mailcatcher:latest
+    ports:
+      - 22025:1025
+      - 22081:1080
+
+  sql:
+    environment:
+      - POSTGRES_PASSWORD=password
+    ports:
+      - 22432:5432

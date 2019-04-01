@@ -1,0 +1,74 @@
+version: '2'
+
+services:
+  sql:
+    build:
+      context: .docker/postgres@9.6/
+    environment:
+      POSTGRES_USER: "kiboko"
+      POSTGRES_DB: "kiboko"
+    restart: on-failure
+
+  amqp:
+    image: rabbitmq:3.6-management
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.6.1
+    ports:
+      - 19200:9200
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
+      - http.port=9200
+      - http.cors.allow-origin=http://localhost:1358,http://127.0.0.1:11358,http://192.168.64.4:11358,http://dejavu:1358,http://host.docker.internal:11358
+      - http.cors.enabled=true
+      - http.cors.allow-headers=X-Requested-With,X-Auth-Token,Content-Type,Content-Length,Authorization
+      - http.cors.allow-credentials=true
+
+  http:
+    image: nginx:alpine
+    volumes:
+      - ./nginx@1.15/config/options.conf:/etc/nginx/conf.d/000-options.conf
+      - ./:/var/www/html
+    restart: on-failure
+
+  fpm:
+    image: kiboko/php:7.2-fpm-marello
+    build:
+      context: php@7.2/fpm
+    user: docker:docker
+    volumes:
+      - ./:/var/www/html
+    restart: on-failure
+
+  ws:
+    image: kiboko/php:7.2-cli-marello
+    build:
+      context: php@7.2/cli
+    command: ["bin/console", "gos:websocket:server", "--env=prod"]
+    user: docker:docker
+    volumes:
+      - ./:/var/www/html
+    restart: on-failure
+
+  mq:
+    image: kiboko/php:7.2-cli-marello
+    build:
+      context: php@7.2/cli
+    command: ["bin/console", "oro:message-queue:consume", "--env=prod", "-vv"]
+    user: docker:docker
+    volumes:
+      - ./:/var/www/html
+    restart: on-failure
+
+  cli:
+    image: kiboko/php:7.2-cli-marello
+    build:
+      context: php@7.2/cli
+    user: docker:docker
+    volumes:
+      - /home/kiboko/.composer:/opt/docker/.composer
+      - ./:/var/www/html
+

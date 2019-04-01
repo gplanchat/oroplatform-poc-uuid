@@ -1,0 +1,8 @@
+services:
+  app.form.autocomplete.author.search_handler:
+    parent: oro_form.autocomplete.search_handler
+    arguments:
+      - AppBundle\Entity\Person
+      - ["firstName", "lastName", "email"]
+    tags:
+      - { name: oro_form.autocomplete.search_handler, alias: persons }

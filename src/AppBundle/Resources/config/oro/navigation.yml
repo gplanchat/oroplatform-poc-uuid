@@ -1,0 +1,11 @@
+navigation:
+    menu_config:
+        items:
+            tickets:
+                label: app.ticket.entity_plural.label
+                route: app_ticket_index
+
+        tree:
+            application_menu:
+                children:
+                    tickets: ~

@@ -1,0 +1,47 @@
+{% extends 'OroUIBundle:actions:view.html.twig' %}
+{% import 'OroUIBundle::macros.html.twig' as UI %}
+
+{% block pageHeader %}
+    {% set breadcrumbs = {
+        'entity':      entity,
+        'indexPath':   path('app_ticket_index'),
+        'indexLabel': 'app.ticket.entity_plural.label'|trans,
+        'entityTitle': entity.title
+    } %}
+    {{ parent() }}
+{% endblock pageHeader %}
+
+{% block navButtons %}
+
+        {{ UI.editButton({
+            'path' : path('app_ticket_update', { uuid: entity.uuid }),
+            'entity_label': 'app.ticket.entity_label'|trans
+        }) }}
+{% endblock %}
+
+{% block content_data %}
+    {% set data %}
+        <div class="widget-content">
+            <div class="row-fluid form-horizontal">
+                <div class="responsive-block">
+                    {{ UI.renderProperty('app.ticket.title.label'|trans, entity.title) }}
+                    {{ UI.renderHtmlProperty('app.ticket.content.label'|trans, entity.content) }}
+                </div>
+            </div>
+        </div>
+    {% endset %}
+
+    {% set dataBlocks = [
+        {
+            'title': 'app.ticket.section.general.label'|trans,
+            'class': 'active',
+            'subblocks': [
+            { 'data': [data] },
+        ]
+        }
+    ] %}
+
+    {% set id = 'ticketView' %}
+    {% set data = { 'dataBlocks': dataBlocks } %}
+    {{ parent() }}
+{% endblock content_data %}

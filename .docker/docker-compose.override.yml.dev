@@ -1,0 +1,53 @@
+version: '2'
+
+services:
+  mail:
+    image: schickling/mailcatcher:latest
+    ports:
+      - 1080:1080
+
+  dejavu:
+    image: appbaseio/dejavu
+    ports:
+      - 1358:1358
+
+  amqp:
+    ports:
+      - 5672:5672
+      - 8080:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=kiboko
+      - RABBITMQ_DEFAULT_PASS=password
+
+  sql:
+    environment:
+      - POSTGRES_PASSWORD=password
+    ports:
+      - 5432:5432
+
+  http:
+    ports:
+      - 8000:80
+    volumes:
+      - ./nginx@1.15/config/vhost-dev.conf:/etc/nginx/conf.d/100-default.conf
+
+  fpm:
+    image: kiboko/php:7.2-fpm-marello-dev
+    build:
+      context: php@7.2/fpm-xdebug
+    volumes:
+      - ./php@7.2/fpm-xdebug/config/pool.ini:/usr/local/etc/php/pool.d/default.ini:ro
+      - ./php@7.2/fpm-xdebug/config/memory.ini:/usr/local/etc/php/conf.d/memory.ini:ro
+      - ./php@7.2/fpm-xdebug/config/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini:ro
+
+  ws:
+    ports:
+      - 8080:8080
+
+  cli:
+    image: kiboko/php:7.2-cli-marello-dev
+    build:
+      context: php@7.2/cli-xdebug
+    volumes:
+      - ./php@7.2/cli-xdebug/config/memory.ini:/usr/local/etc/php/conf.d/memory.ini:ro
+      - ./php@7.2/cli-xdebug/config/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini:ro

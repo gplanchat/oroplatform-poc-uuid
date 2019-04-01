@@ -1,0 +1,52 @@
+search:
+    AppBundle\Entity\Ticket:
+        alias:                          ticket
+        title_fields:                   [title]
+        route:
+            name:                       app_ticket_view
+            parameters:
+                uuid:                   uuid
+        search_template:                AppBundle:Ticket:searchResult.html.twig
+        fields:
+            -
+                name:                   title
+                target_type:            text
+                target_fields:          [title]
+            -
+                name:                  author
+                relation_type:         many-to-one
+                relation_fields:
+                    -
+                        name:          authorName
+                        target_type:   text
+                        target_fields: [firstName, lastName]
+                    -
+                        name:          authorEmail
+                        target_type:   text
+                        target_fields: [email]
+
+    AppBundle\Entity\Person:
+        alias:                          person
+        title_fields:                   [name, email]
+        route:
+            name:                       app_person_view
+            parameters:
+                uuid:                   uuid
+        search_template:                AppBundle:Person:searchResult.html.twig
+        fields:
+            -
+                name:                   name
+                target_type:            text
+                target_fields:          [firstName, lastName]
+            -
+                name:                   firstName
+                target_type:            text
+                target_fields:          [firstName]
+            -
+                name:                   lastName
+                target_type:            text
+                target_fields:          [lastName]
+            -
+                name:                   email
+                target_type:            text
+                target_fields:          [email]
